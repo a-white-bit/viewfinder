@@ -1,6 +1,6 @@
 package com.sparta.viewfinder.entity;
 
-import com.sparta.viewfinder.dto.ProfileUpdateRequestDto;
+import com.sparta.viewfinder.dto.user.ProfileUpdateRequestDto;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;

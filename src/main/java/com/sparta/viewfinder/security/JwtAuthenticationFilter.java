@@ -1,9 +1,9 @@
 package com.sparta.viewfinder.security;
 
-import com.sparta.viewfinder.dto.LoginRequestDto;
+import com.sparta.viewfinder.dto.user.LoginRequestDto;
+import com.sparta.viewfinder.dto.common.CustomResponseCode;
 import com.sparta.viewfinder.entity.UserRoleEnum;
 import com.sparta.viewfinder.entity.UserStatusEnum;
-import com.sparta.viewfinder.exception.CommonErrorCode;
 import com.sparta.viewfinder.exception.NotFoundException;
 import com.sparta.viewfinder.jwt.JwtTokenHelper;
 import java.io.IOException;
@@ -47,7 +47,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     } catch (IOException e) {
       log.error(e.getMessage());
-      throw new NotFoundException(CommonErrorCode.TOKEN_ERROR);
+      throw new NotFoundException(CustomResponseCode.TOKEN_ERROR);
     }
   }
 
@@ -71,7 +71,6 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     response.setCharacterEncoding("utf-8");
     response.getWriter().write("상태 : " + response.getStatus() + ", 로그인 성공");
-
   }
 
   @Override

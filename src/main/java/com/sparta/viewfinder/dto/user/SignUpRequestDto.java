@@ -1,4 +1,4 @@
-package com.sparta.viewfinder.dto;
+package com.sparta.viewfinder.dto.user;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;

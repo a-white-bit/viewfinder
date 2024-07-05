@@ -1,17 +1,20 @@
 package com.sparta.viewfinder.controller;
 
-import com.sparta.viewfinder.dto.SignUpRequestDto;
-import com.sparta.viewfinder.dto.UserUpdateRequestDto;
-import com.sparta.viewfinder.dto.WithDrawUserRequestDto;
+import com.sparta.viewfinder.dto.user.SignUpRequestDto;
+import com.sparta.viewfinder.dto.user.SignUpResponseDto;
+import com.sparta.viewfinder.dto.user.UserUpdateRequestDto;
+import com.sparta.viewfinder.dto.user.WithDrawUserRequestDto;
+import com.sparta.viewfinder.dto.common.CustomResponseCode;
+import com.sparta.viewfinder.dto.common.SuccessResponseDto;
 import com.sparta.viewfinder.entity.UserRoleEnum;
 import com.sparta.viewfinder.entity.UserStatusEnum;
 import com.sparta.viewfinder.jwt.JwtTokenHelper;
 import com.sparta.viewfinder.security.UserDetailsImpl;
 import com.sparta.viewfinder.service.UserService;
 import io.jsonwebtoken.Claims;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,40 +33,37 @@ public class UserController {
     private final UserService userService;
     private final JwtTokenHelper jwtTokenHelper;
 
-    private static final String SUCCESS_LOGIN = "로그인 성공";
-    private static final String SUCCESS_LOGOUT = "로그아웃 성공";
-    private static final String SUCCESS_SIGN_UP = "회원가입에 성공하였습니다.";
-    private static final String WITHDRAW_SUCCESS_MESSAGE = "회원탈퇴에 성공했습니다.";
-    private static final String REFRESH_TOKEN_SUCCESS_MESSAGE = "토큰 재발급 성공했습니다.";
-    private static final String SUCCESS_UPDATE_PASSWORD = "비밀번호 변경이 정상적으로 처리되었습니다.";
-
     // 회원가입
-    @PostMapping("/sign-up") // http://localhost:8080/sign-up POST
-    public ResponseEntity<String> signUp(@Valid @RequestBody SignUpRequestDto requestDto) { // Valid를 달아야 검증 작동
-        userService.signUp(requestDto);
-        return ResponseEntity.ok().body(SUCCESS_SIGN_UP);
+    @PostMapping("/sign-up")
+    public SuccessResponseDto<SignUpResponseDto> signUp(@Valid @RequestBody SignUpRequestDto requestDto) {
+        SignUpResponseDto res = userService.signUp(requestDto);
+        return new SuccessResponseDto<>(CustomResponseCode.SUCCESS_SIGN_UP, res);
     }
 
     @DeleteMapping("/withdraw")
-    public ResponseEntity<String> withDraw(
+    public SuccessResponseDto<?> withDraw(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @Valid @RequestBody WithDrawUserRequestDto requestDto) {
 
         userService.withDraw(userDetails.getUser().getId(), requestDto.getPassword());
-        return ResponseEntity.ok().body(WITHDRAW_SUCCESS_MESSAGE);
+        return new SuccessResponseDto<>(CustomResponseCode.WITHDRAW_SUCCESS_MESSAGE, null);
     }
 
     @PostMapping("/log-out")
-    public ResponseEntity<String> logout(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        userService.logout(userDetails.getUser().getId());
-        return ResponseEntity.ok().body(SUCCESS_LOGOUT);
+    public SuccessResponseDto<?> logout(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        if (userService.logout(userDetails.getUser().getId())) {
+            return new SuccessResponseDto<>(CustomResponseCode.SUCCESS_LOGOUT, null);
+        } else {
+            return new SuccessResponseDto<>(CustomResponseCode.FAIL_LOGOUT, null);
+        }
     }
 
     // 토큰 재발급
     @GetMapping("/refresh")
-    public ResponseEntity<String> refresh(
+    public SuccessResponseDto<String> refresh(
             @RequestHeader(JwtTokenHelper.AUTHORIZATION_HEADER) String accessToken,
-            @RequestHeader(JwtTokenHelper.REFRESH_TOKEN_HEADER) String refreshToken) {
+            @RequestHeader(JwtTokenHelper.REFRESH_TOKEN_HEADER) String refreshToken,
+            HttpServletResponse response) {
 
         Claims claims = jwtTokenHelper.getExpiredAccessToken(accessToken);
         String username = claims.getSubject();
@@ -76,16 +76,16 @@ public class UserController {
         userService.refreshTokenCheck(username, refreshToken);
 
         String newAccessToken = jwtTokenHelper.createToken(username, statusEnum, roleEnum);
-        return ResponseEntity.ok()
-            .header(JwtTokenHelper.AUTHORIZATION_HEADER, newAccessToken)
-            .body(REFRESH_TOKEN_SUCCESS_MESSAGE + newAccessToken);
+        response.setHeader(JwtTokenHelper.AUTHORIZATION_HEADER, newAccessToken);
+
+        return new SuccessResponseDto<>(CustomResponseCode.REFRESH_TOKEN_SUCCESS_MESSAGE, newAccessToken);
     }
 
     @PatchMapping("/user")
-    public ResponseEntity<String> updatePassword(
+    public SuccessResponseDto<?> updatePassword(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @Valid @RequestBody UserUpdateRequestDto requestDto) {
         userService.updatePassword(userDetails, requestDto);
-        return ResponseEntity.ok().body(SUCCESS_UPDATE_PASSWORD);
+        return new SuccessResponseDto<>(CustomResponseCode.SUCCESS_UPDATE_PASSWORD, null);
     }
 }

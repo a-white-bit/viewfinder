@@ -1,16 +1,14 @@
 package com.sparta.viewfinder.service;
 
-import com.sparta.viewfinder.dto.CommentRequestDto;
-import com.sparta.viewfinder.dto.CommentResponseDto;
+import com.sparta.viewfinder.dto.comment.CommentRequestDto;
+import com.sparta.viewfinder.dto.comment.CommentResponseDto;
+import com.sparta.viewfinder.dto.common.CustomResponseCode;
 import com.sparta.viewfinder.entity.Comment;
 import com.sparta.viewfinder.entity.Post;
 import com.sparta.viewfinder.entity.User;
 import com.sparta.viewfinder.entity.UserRoleEnum;
-import com.sparta.viewfinder.exception.CommentErrorCode;
 import com.sparta.viewfinder.exception.MismatchException;
 import com.sparta.viewfinder.exception.NotFoundException;
-import com.sparta.viewfinder.exception.PostErrorCode;
-import com.sparta.viewfinder.exception.UserErrorCode;
 import com.sparta.viewfinder.repository.CommentRepository;
 import com.sparta.viewfinder.repository.PostRepository;
 import com.sparta.viewfinder.repository.UserRepository;
@@ -36,11 +34,11 @@ public class CommentService {
             UserDetailsImpl userDetails, Long postId, CommentRequestDto commentRequestDto) {
         // 사용자를 찾을 수 없을 때
         User user = userRepository.findById(userDetails.getUser().getId()).orElseThrow(
-                () -> new NotFoundException(UserErrorCode.USER_NOT_FOUND));
+                () -> new NotFoundException(CustomResponseCode.USER_NOT_FOUND));
 
         // 게시물을 찾을 수 없을 때 -> Post에 관한 ErrorCode 클래스 만들고 사용
         Post post = postRepository.findById(postId).orElseThrow(
-                () -> new NotFoundException(PostErrorCode.POST_NOT_FOUND));
+                () -> new NotFoundException(CustomResponseCode.POST_NOT_FOUND));
 
         Comment comment = new Comment(user, post, commentRequestDto.getContent());
         commentRepository.save(comment);
@@ -52,7 +50,7 @@ public class CommentService {
     public List<CommentResponseDto> readComment(Long postId) {
         // 게시물을 찾을 수 없을 때 -> Post에 관한 ErrorCode 클래스 만들고 사용
         if (!postRepository.existsById(postId)) {
-            throw new NotFoundException(PostErrorCode.POST_NOT_FOUND);
+            throw new NotFoundException(CustomResponseCode.POST_NOT_FOUND);
         }
 
         List<Comment> commentList = commentRepository.findAllByPostId(postId);
@@ -80,22 +78,22 @@ public class CommentService {
         commentRepository.delete(comment);
     }
 
-    //본인 댓글 확인
+    // 본인 댓글 확인
     private Comment findComment(Long commentId, User user){
         Comment comment = commentRepository.findById(commentId).orElseThrow(
-            () -> new NotFoundException(CommentErrorCode.COMMENT_NOT_FOUND));
+            () -> new NotFoundException(CustomResponseCode.COMMENT_NOT_FOUND));
 
         validateUser(comment, user);
         return comment;
     }
 
-    //본인 확인 및 어드민 체크
+    // 본인 확인 및 어드민 체크
     private void validateUser(Comment comment, User user){
         boolean invalidUser = !Objects.equals(comment.getUser().getId(), user.getId());
         boolean invalidAdmin = !UserRoleEnum.ADMIN.equals(comment.getUser().getUserRole());
 
         if (invalidAdmin && invalidUser) {
-            throw new MismatchException(UserErrorCode.USER_NOT_MATCH);
+            throw new MismatchException(CustomResponseCode.USER_NOT_MATCH);
         }
     }
 }

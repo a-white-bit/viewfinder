@@ -1,6 +1,6 @@
 package com.sparta.viewfinder.entity;
 
-import com.sparta.viewfinder.dto.PostRequestDto;
+import com.sparta.viewfinder.dto.post.PostRequestDto;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;

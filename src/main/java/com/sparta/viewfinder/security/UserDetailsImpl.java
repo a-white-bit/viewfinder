@@ -1,6 +1,7 @@
 package com.sparta.viewfinder.security;
 
 import com.sparta.viewfinder.entity.User;
+import com.sparta.viewfinder.entity.UserRoleEnum;
 import com.sparta.viewfinder.entity.UserStatusEnum;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -31,14 +32,13 @@ public class UserDetailsImpl implements UserDetails {
     return user.getUsername();
   }
 
-  //사용자 권한 정하는 메서드
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
     UserStatusEnum statusEnum = user.getStatus();
     String status = statusEnum.getStatus();
-// 없어도 되는 건지
-//    UserRoleEnum userRoleEnum = user.getUserRole();
-//    String role = userRoleEnum.getAuthority();
+
+    UserRoleEnum userRoleEnum = user.getUserRole();
+    String role = userRoleEnum.getAuthority();
 
     SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(status);
 //    SimpleGrantedAuthority simpleGrantedAuthority1 = new SimpleGrantedAuthority(role);

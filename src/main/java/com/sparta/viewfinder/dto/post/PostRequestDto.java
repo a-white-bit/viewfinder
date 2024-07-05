@@ -1,4 +1,4 @@
-package com.sparta.viewfinder.dto;
+package com.sparta.viewfinder.dto.post;
 
 import lombok.Getter;
 

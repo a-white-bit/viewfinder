@@ -1,4 +1,4 @@
-package com.sparta.viewfinder.dto;
+package com.sparta.viewfinder.dto.comment;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

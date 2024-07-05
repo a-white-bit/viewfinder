@@ -1,10 +1,11 @@
 package com.sparta.viewfinder.exception;
 
+import com.sparta.viewfinder.dto.common.CustomResponseCode;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 @Getter
-@RequiredArgsConstructor
-public class NotFoundException extends RuntimeException {
-    private final ErrorCode errorCode;
+public class NotFoundException extends CustomException {
+    public NotFoundException(CustomResponseCode code) {
+        super(code);
+    }
 }

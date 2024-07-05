@@ -1,14 +1,14 @@
 package com.sparta.viewfinder.controller;
 
-import com.sparta.viewfinder.dto.ProfileAllResponseDto;
-import com.sparta.viewfinder.dto.ProfileDetailResponseDto;
-import com.sparta.viewfinder.dto.ProfileUpdateRequestDto;
-import com.sparta.viewfinder.dto.ProfileUpdateResponseDto;
+import com.sparta.viewfinder.dto.user.ProfileAllResponseDto;
+import com.sparta.viewfinder.dto.user.ProfileDetailResponseDto;
+import com.sparta.viewfinder.dto.user.ProfileUpdateRequestDto;
+import com.sparta.viewfinder.dto.user.ProfileUpdateResponseDto;
+import com.sparta.viewfinder.dto.common.CustomResponseCode;
+import com.sparta.viewfinder.dto.common.SuccessResponseDto;
 import com.sparta.viewfinder.security.UserDetailsImpl;
 import com.sparta.viewfinder.service.ProfileService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -21,27 +21,26 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/profile")
 public class ProfileController {
     private final ProfileService profileService;
 
-    @GetMapping
-    public ResponseEntity<List<ProfileAllResponseDto>> getAllProfiles() {
-        List<ProfileAllResponseDto> allProfiles = profileService.getAllProfiles();
-        return ResponseEntity.ok().body(allProfiles);
+    @GetMapping("/profile")
+    public SuccessResponseDto<List<ProfileAllResponseDto>> getAllProfiles() {
+        List<ProfileAllResponseDto> res = profileService.getAllProfiles();
+        return new SuccessResponseDto<>(CustomResponseCode.SUCCESS, res);
     }
 
-    @GetMapping("/{profile_id}")
-    public ResponseEntity<ProfileDetailResponseDto> getProfileDetail(@PathVariable("profile_id") Long profileId) {
-        ProfileDetailResponseDto profileDetail = profileService.getProfileDetail(profileId);
-        return ResponseEntity.ok().body(profileDetail);
+    @GetMapping("/profile/{profile_id}")
+    public SuccessResponseDto<ProfileDetailResponseDto> getProfileDetail(@PathVariable("profile_id") Long profileId) {
+        ProfileDetailResponseDto res = profileService.getProfileDetail(profileId);
+        return new SuccessResponseDto<>(CustomResponseCode.SUCCESS, res);
     }
 
-    @PatchMapping
-    public ResponseEntity<ProfileUpdateResponseDto> updateProfile(
+    @PatchMapping("/profile")
+    public SuccessResponseDto<ProfileUpdateResponseDto> updateProfile(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @RequestBody ProfileUpdateRequestDto requestDto) {
-        ProfileUpdateResponseDto profileUpdateResponseDto = profileService.updateProfile(userDetails, requestDto);
-        return ResponseEntity.status(HttpStatus.OK).body(profileUpdateResponseDto);
+        ProfileUpdateResponseDto res = profileService.updateProfile(userDetails, requestDto);
+        return new SuccessResponseDto<>(CustomResponseCode.SUCCESS, res);
     }
 }

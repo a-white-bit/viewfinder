@@ -1,14 +1,15 @@
 package com.sparta.viewfinder.service;
 
-import com.sparta.viewfinder.dto.PostRequestDto;
-import com.sparta.viewfinder.dto.PostResponseDto;
+import com.sparta.viewfinder.dto.post.PostReadResponseDto;
+import com.sparta.viewfinder.dto.post.PostRequestDto;
+import com.sparta.viewfinder.dto.post.PostResponseDto;
+import com.sparta.viewfinder.dto.common.CustomResponseCode;
 import com.sparta.viewfinder.entity.Post;
 import com.sparta.viewfinder.entity.User;
 import com.sparta.viewfinder.entity.UserRoleEnum;
 import com.sparta.viewfinder.exception.MismatchException;
 import com.sparta.viewfinder.exception.NotFoundException;
-import com.sparta.viewfinder.exception.PostErrorCode;
-import com.sparta.viewfinder.exception.UserErrorCode;
+import com.sparta.viewfinder.repository.PostLikeRepository;
 import com.sparta.viewfinder.repository.PostRepository;
 import com.sparta.viewfinder.repository.UserRepository;
 import com.sparta.viewfinder.security.UserDetailsImpl;
@@ -30,20 +31,22 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+    private final PostLikeRepository postLikeRepository;
 
     public PostResponseDto createPost(UserDetailsImpl userDetails, PostRequestDto requestDto) {
         User user = userRepository.findById(userDetails.getUser().getId())
-            .orElseThrow(() -> new NotFoundException(UserErrorCode.USER_NOT_FOUND));
+            .orElseThrow(() -> new NotFoundException(CustomResponseCode.USER_NOT_FOUND));
         Post post = new Post(user, requestDto.getContent());
         postRepository.save(post);
 
         return new PostResponseDto(post);
     }
 
-    public PostResponseDto readPost(Long postId) {
+    public PostReadResponseDto readPost(Long postId) {
         Post post = postRepository.findById(postId).orElseThrow(
-            () -> new NotFoundException(PostErrorCode.POST_NOT_FOUND));
-        return new PostResponseDto(post);
+            () -> new NotFoundException(CustomResponseCode.POST_NOT_FOUND));
+        Long likeCount = postLikeRepository.count();
+        return new PostReadResponseDto(post, likeCount);
     }
 
     public Page<PostResponseDto> readAllPost(int page) {
@@ -76,7 +79,7 @@ public class PostService {
     //본인 게시글 확인
     private Post findPost(Long postId, User user){
         Post post = postRepository.findById(postId).orElseThrow(
-            () -> new NotFoundException(PostErrorCode.POST_NOT_FOUND));
+            () -> new NotFoundException(CustomResponseCode.POST_NOT_FOUND));
 
         validateUser(post, user);
         return post;
@@ -88,7 +91,7 @@ public class PostService {
         boolean invalidAdmin = !UserRoleEnum.ADMIN.equals(user.getUserRole());
 
         if (invalidAdmin && invalidUser) {
-            throw new MismatchException(UserErrorCode.USER_NOT_MATCH);
+            throw new MismatchException(CustomResponseCode.USER_NOT_MATCH);
         }
     }
 }

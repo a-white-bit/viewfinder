@@ -1,15 +1,15 @@
-package com.sparta.viewfinder.dto;
+package com.sparta.viewfinder.dto.post;
 
 import com.sparta.viewfinder.entity.Post;
 import lombok.Getter;
 
 @Getter
 public class PostResponseDto {
-    private Long userId;
-    private String username;
-    private String content;
-    private String createdAt;
-    private String modifiedAt;
+    private final Long userId;
+    private final String username;
+    private final String content;
+    private final String createdAt;
+    private final String modifiedAt;
 
     public PostResponseDto(Post post) {
         this.userId = post.getUser().getId();

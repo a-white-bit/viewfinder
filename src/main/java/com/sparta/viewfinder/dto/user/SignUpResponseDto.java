@@ -1,4 +1,4 @@
-package com.sparta.viewfinder.dto;
+package com.sparta.viewfinder.dto.user;
 
 import com.sparta.viewfinder.entity.User;
 import lombok.Getter;

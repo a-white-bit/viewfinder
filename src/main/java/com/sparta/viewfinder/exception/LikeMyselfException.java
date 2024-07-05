@@ -4,8 +4,8 @@ import com.sparta.viewfinder.dto.common.CustomResponseCode;
 import lombok.Getter;
 
 @Getter
-public class MismatchException extends CustomException {
-    public MismatchException(CustomResponseCode code) {
+public class LikeMyselfException extends CustomException {
+    public LikeMyselfException(CustomResponseCode code) {
         super(code);
     }
 }

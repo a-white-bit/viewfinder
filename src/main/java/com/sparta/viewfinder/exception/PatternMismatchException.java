@@ -1,10 +1,11 @@
 package com.sparta.viewfinder.exception;
 
+import com.sparta.viewfinder.dto.common.CustomResponseCode;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 @Getter
-@RequiredArgsConstructor
-public class PatternMismatchException extends RuntimeException {
-    private final ErrorCode errorCode;
+public class PatternMismatchException extends CustomException {
+    public PatternMismatchException(CustomResponseCode code) {
+        super(code);
+    }
 }

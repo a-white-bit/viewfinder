@@ -1,4 +1,4 @@
-package com.sparta.viewfinder.dto;
+package com.sparta.viewfinder.dto.user;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;

@@ -1,18 +1,16 @@
-package com.sparta.viewfinder.dto;
+package com.sparta.viewfinder.dto.comment;
 
 import com.sparta.viewfinder.entity.Comment;
 import lombok.Getter;
 
 @Getter
-
 public class CommentResponseDto {
-    private Long userId;
-    private String username;
-    private Long postId;
-    private String content;
-    private String createAt;
-    private String modifiedAt;
-
+    private final Long userId;
+    private final String username;
+    private final Long postId;
+    private final String content;
+    private final String createAt;
+    private final String modifiedAt;
 
     public CommentResponseDto(Comment comment){
         this.userId = comment.getUser().getId();

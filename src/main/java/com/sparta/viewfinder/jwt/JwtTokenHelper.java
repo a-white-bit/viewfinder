@@ -1,10 +1,10 @@
 package com.sparta.viewfinder.jwt;
 
+import com.sparta.viewfinder.dto.common.CustomResponseCode;
 import com.sparta.viewfinder.entity.User;
 import com.sparta.viewfinder.entity.UserRoleEnum;
 import com.sparta.viewfinder.entity.UserStatusEnum;
 import com.sparta.viewfinder.exception.NotFoundException;
-import com.sparta.viewfinder.exception.UserErrorCode;
 import com.sparta.viewfinder.repository.UserRepository;
 import java.security.Key;
 import java.util.Base64;
@@ -123,7 +123,7 @@ public class JwtTokenHelper {
   @Transactional
   public void saveRefreshToken(String username, String refreshToken) {
     User user = userRepository.findByUsername(username)
-        .orElseThrow(() -> new NotFoundException(UserErrorCode.USER_NOT_FOUND));
+        .orElseThrow(() -> new NotFoundException(CustomResponseCode.USER_NOT_FOUND));
     user.saveRefreshToken(refreshToken);
   }
 

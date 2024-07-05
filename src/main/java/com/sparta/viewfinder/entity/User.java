@@ -66,7 +66,7 @@ public class User extends Timestamped{
 
     public boolean logout(){
         refreshToken = null;
-        return refreshToken == null ? true : false;
+        return true;
     }
 
     public void saveRefreshToken(String refreshToken) {
